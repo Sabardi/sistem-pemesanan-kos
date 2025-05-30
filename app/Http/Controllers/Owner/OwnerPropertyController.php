@@ -60,22 +60,44 @@ class OwnerPropertyController extends Controller
      */
     public function edit(Property $property)
     {
-        //
+        return view('owner.properties.edit', compact('property'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Property $property)
     {
-        //
+        // Validasi request data
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            // Tambahkan aturan validasi lain jika diperlukan
+            // misalnya untuk harga, jumlah kamar, fasilitas, dll.
+        ]);
+
+        // Update properti dengan data yang divalidasi
+        $property->update($validatedData);
+
+        // Redirect kembali ke halaman edit dengan pesan sukses
+        // Atau bisa juga redirect ke halaman daftar properti atau detail properti
+        return redirect()->route('owner.properties.edit', $property->id)
+                         ->with('success', 'Properti berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Property $property)
-    {
-        //
-    }
+        public function destroy(Property $property)
+        {
+            // Pastikan properti dimiliki oleh owner yang sedang login
+            if ($property->owner_id !== auth()->id()) {
+                abort(403, 'Unauthorized action.');
+            }
+
+            // Hapus properti
+            $property->delete();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('owner.dashboard')
+                           ->with('success', 'Properti berhasil dihapus.');
+        }
 }

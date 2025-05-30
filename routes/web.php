@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\TenantRegistrationController;
 use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Owner\OwnerPropertyController;
+use App\Http\Controllers\Owner\PropertyController;
 // use App\Http\Controllers\Admin\LocationController; // Will be removed
 
 /*
@@ -47,6 +48,12 @@ Route::middleware(['auth', 'role:owner', 'ensure.owner.has.property'])->prefix('
     Route::post('/properties', [OwnerPropertyController::class, 'store'])->name('properties.store');
     // Add other owner-specific routes here (e.g., edit, update, delete properties)
     // Route::resource('properties', OwnerPropertyController::class)->except(['create', 'store']); // Example for later
+
+    // Route untuk edit dan update properti
+    Route::get('/properties/{property}/edit', [OwnerPropertyController::class, 'edit'])->name('properties.edit');
+    Route::put('/properties/{property}', [OwnerPropertyController::class, 'update'])->name('properties.update');
+
+    Route::delete('/properties/{property}', [OwnerPropertyController::class, 'destroy'])->name('properties.destroy');
 });
 
 // Admin Routes

@@ -43,6 +43,10 @@ class AuthenticatedSessionController extends Controller
     protected function authenticated(Request $request, $user): RedirectResponse
     {
         if ($user->role === 'owner') {
+            // Check if owner has any properties
+            if (!$user->properties()->exists()) {
+                return redirect()->route('owner.properties.create')->with('warning', 'Welcome! Please add your first property to get started.');
+            }
             return redirect()->route('owner.dashboard');
         } elseif ($user->role === 'tenant') {
             // TODO: Create tenant.dashboard route and view

@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\OwnerRegistrationController;
 use App\Http\Controllers\Auth\TenantRegistrationController;
 use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Owner\OwnerPropertyController;
+// use App\Http\Controllers\Admin\LocationController; // Will be removed
 
 /*
 |--------------------------------------------------------------------------
@@ -32,22 +34,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Owner Dashboard Route
-Route::middleware(['auth', 'role:owner'])->group(function () {
-    Route::get('/owner/dashboard', [OwnerDashboardController::class, 'index'])->name('owner.dashboard');
-    // Add other owner-specific routes here
+// Owner Routes
+Route::middleware(['auth', 'role:owner', 'ensure.owner.has.property'])->prefix('owner')->name('owner.')->group(function () {
+    Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
+    
+    // Property Management Routes for Owner
+    // These routes are handled by the logic within EnsureOwnerHasProperty middleware itself
+    // so they don't need the middleware applied directly to them again IF they are defined outside this group,
+    // but for simplicity and to catch all owner-related routes, keeping them in this group is fine.
+    // The middleware will allow access to create/store if the owner has no properties.
+    Route::get('/properties/create', [OwnerPropertyController::class, 'create'])->name('properties.create');
+    Route::post('/properties', [OwnerPropertyController::class, 'store'])->name('properties.store');
+    // Add other owner-specific routes here (e.g., edit, update, delete properties)
+    // Route::resource('properties', OwnerPropertyController::class)->except(['create', 'store']); // Example for later
 });
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
-    // Location Management Routes - TO BE REMOVED
-    // Route::prefix('locations')->name('locations.')->group(function () {
-    //     Route::get('/provinces/{province_code}/cities', [LocationController::class, 'showCities'])->name('cities');
-    //     Route::get('/cities/{city_code}/districts', [LocationController::class, 'showDistricts'])->name('districts');
-    //     Route::get('/districts/{district_code}/villages', [LocationController::class, 'showVillages'])->name('villages');
-    // });
+    // CRUD for Locations (our app's locations table) - REMOVING
+    // Route::resource('locations', LocationController::class);
+    
     // Add other admin-specific routes here
 });
 

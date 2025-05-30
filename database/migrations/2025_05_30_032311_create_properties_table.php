@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // Nama Kos
             $table->enum('type', ['putra', 'putri', 'campuran', 'keluarga']); // Tipe Kos
-            $table->foreignId('location_id')->constrained('locations')->onDelete('cascade');
+            $table->string('address');
             $table->unsignedBigInteger('owner_id');
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('description')->nullable();

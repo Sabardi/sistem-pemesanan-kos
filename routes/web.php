@@ -38,9 +38,16 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     // Add other owner-specific routes here
 });
 
-// Admin Dashboard Route
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+// Admin Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Location Management Routes - TO BE REMOVED
+    // Route::prefix('locations')->name('locations.')->group(function () {
+    //     Route::get('/provinces/{province_code}/cities', [LocationController::class, 'showCities'])->name('cities');
+    //     Route::get('/cities/{city_code}/districts', [LocationController::class, 'showDistricts'])->name('districts');
+    //     Route::get('/districts/{district_code}/villages', [LocationController::class, 'showVillages'])->name('villages');
+    // });
     // Add other admin-specific routes here
 });
 
